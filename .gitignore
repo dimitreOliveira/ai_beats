@@ -1,0 +1,4 @@
+.DS_Store
+.venvs/
+__pycache__/
+beats

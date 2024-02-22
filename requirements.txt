@@ -1,0 +1,8 @@
+pyyaml>=6.0.1
+# numpy>=1.26.3
+moviepy>=1.0.3
+torch
+# scipy
+audiocraft
+diffusers
+accelerate

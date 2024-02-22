@@ -1,0 +1,31 @@
+project_dir: beats
+project_name: lofi
+seed: 42
+music:
+  model_id: facebook/musicgen-small
+  device: cpu
+  n_music: 3
+  music_duration: 60
+  initial_music_tokens: 1050
+  max_continuation_duration: 20
+  prompt_music_duration: 10
+  prompt: "lo-fi music with a relaxing slow melody"
+image:
+  model_id: stabilityai/sdxl-turbo
+  device: mps
+  n_images: 5
+  inference_steps: 1
+  height: 576
+  width: 1024
+  prompt: "A dream of a distant galaxy"
+  prompt_modifiers: 
+    - "concept art, HQ, 4k"
+    - "epic scene, cinematic, sci fi cinematic look, intense dramatic scene"
+video:
+  model_id: stabilityai/stable-video-diffusion-img2vid
+  device: cpu #mps
+  n_continuations: 2
+  video_fps: 10
+  decode_chunk_size: 8
+  motion_bucket_id: 50
+  noise_aug_strength: 0.1
