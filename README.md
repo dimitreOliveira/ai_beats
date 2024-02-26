@@ -1,40 +1,107 @@
 # AI beats
 
-![](./assets/ai_trailer.jpg)
+![](./assets/ai_beats.jpg)
 
 ---
 
-The idea of this repository is to automatically generate a number of trailer candidates for a given movie, the user only needs to provide the movie file and a couple of text parameters, and everything else is taken care.
+With this project, you can use AI to generate music tracks and video clips. Provide some information on how you would like the music and videos, the code will do the rest.
 
 ### How does it works?
-First, we take the movie's plot at IMDB and split it into subplots, they will roughly describe the main parts of the movie, and next, we generate a voice for each subplot. Now that we have the spoken part of the trailer we just need to take short clips corresponding to each subplot and apply the voice over them, we do this by sampling many frames from the movie and taking some of the most similar frames to each subplot, with this we have the images that best represent each subplot, the next step would be to take a clip of a few seconds starting from each frame. After generating the audio and visual part of the trailer we just need to combine each audio with the corresponding clip and finally join all clips together into the final trailer.
+First, we use a generative model to create music samples, the default model used here is only able to generate at max 30 seconds of music, for this reason, we take another step to extend the music. After finishing with the audio part we can generate the video, first, we start with a Stable Diffusion model to generate images and then we use another generative model to give it a bit of motion and animation. To compose the final video clip, we take each generated music and join together as many animated images as necessary to match the length of the music.
 
 All of those steps will generate intermediate files that you can inspect and manually remove what you don't like to improve the results.
 
-> Note: with the default parameters, for each subplot only one audio and one clip will be generated thus creating only one trailer candidate. If you wish to create more trailer candidates or have more options of audios and clips to choose from, you can increase `n_audios` and `n_retrieved_images`, just keep in mind that the trailer candidates increase geometrically with this, for `n_audios = 3` and `n_retrieved_images = 3` you will have 9 (3**3) trailer candidates at the end.
-
 # Examples
-### Night of the Living Dead (1968)
-[![Watch the video](https://i.ytimg.com/vi/qNt4fQlEHPA/hqdefault.jpg)](https://youtu.be/qNt4fQlEHPA)
+### AI Beats Vol. 1
+[![Watch the video]({link_for_the_thumb})]({link_for_the_video})
 
-### Nosferatu (1922)
-[![Watch the video](https://i.ytimg.com/vi/bfUdjzndOyI/hqdefault.jpg)](https://youtu.be/bfUdjzndOyI)
+### AI Beats Vol. 2
+[![Watch the video]({link_for_the_thumb})]({link_for_the_video})
 
 # Usage
 The recommended approach to use this repository is with [Docker](https://docs.docker.com/), but you can also use a custom venv, just make sure to install all dependencies.
 
-**The user only needs to provide two inputs**, the movie file and the IMDB ID from that movie.
-After that you can go to the `configs.yaml` file and adjust the values accordingly, `movie_id` will be the IMDB ID, and `movie_path` should point to the movie's file, you might also want to update `project_name` to your movie's name and provide a reference voice with `reference_voice_path`.
+> Note: make sure to update the device param to maximize performance, but notice that some models might not work for all device options (cpu, cuda, mps).
 
 ## Application workflow
-1. **Plot:** Get the movie's plot from IMDB and split it into subplots
-2. **Voice:** Generate a voice for each subplot
+1. **Music generation:** Generate the initial music tracks
+2. **Music continuation:** Extend the initial music tracks to a longer duration
+3. **Image generation:** Create the images that will be used to fill the video clip
+4. **Video generation:** Generate animations from the images to compose video clips
+5. **Video clip creation:** Join multiple video clips together to accompany the music tracks
 
 ## Configs
 ```
-project_name: night_of_the_living_dead
+project_dir: beats
+project_name: lofi
+seed: 42
+music:
+  prompt: "lo-fi music with a relaxing slow melody"
+  model_id: facebook/musicgen-small
+  device: cpu
+  n_music: 5
+  music_duration: 60
+  initial_music_tokens: 1050
+  max_continuation_duration: 20
+  prompt_music_duration: 10
+image:
+  prompt: "Mystical Landscape"
+  prompt_modifiers: 
+    - "concept art, HQ, 4k"
+    - "epic scene, cinematic, sci fi cinematic look, intense dramatic scene"
+    - "digital art, hyperrealistic, fantasy, dark art"
+    - "digital art, hyperrealistic, sense of comsmic wonder"
+    - "mystical and ethereal atmosphere, photo taken with a wide-angle lens"
+  model_id: stabilityai/sdxl-turbo
+  device: mps
+  n_images: 5
+  inference_steps: 3
+  height: 576
+  width: 1024
+video:
+  model_id: stabilityai/stable-video-diffusion-img2vid
+  device: cpu
+  n_continuations: 2
+  loop_video: true
+  video_fps: 6
+  decode_chunk_size: 8
+  motion_bucket_id: 127
+  noise_aug_strength: 0.1
+audio_clip:
+  n_music_loops: 1
 ```
-- **project_name**: Project name and main folder, it can be any name that you want
+- **project_dir**: Folder that will host all your projects
+- **project_name**: Project name and main folder
+- **seed**: Seed used to control the randomness of the models
+- **music**
+  - **prompt:** Text prompt used to generate the music
+  - **model_id:** Model used to generate and extend the music tracks
+  - **device**: Device used by the model, usually one of (cpu, cuda, mps)
+  - **n_music:** Number of music tracks that will be created
+  - **music_duration:** Duration length of the final music
+  - **initial_music_tokens:** Duration length of the initial music (in tokens)
+  - **max_continuation_duration:** Maximum length of each extended music segment
+  - **prompt_music_duration:** Length of base music used to create the extension
+- **image**
+  - **prompt:** Text prompt used to generate the images
+  - **prompt_modifiers:** Prompt modifiers used to change the image style
+  - **model_id:** Model used to create the images
+  - **device**: Device used by the model, usually one of (cpu, cuda, mps)
+  - **n_images:** Number of images that will be created
+  - **inference_steps:** Number of inference steps for the diffusion model
+  - **height:** Height of the generated image
+  - **width:** Width of the generated image
+- **video**
+  - **model_id:** Model used to animate the images
+  - **device**: Device used by the model, usually one of (cpu, cuda, mps)
+  - **n_continuations:** Number of animation segments that will be created
+  - **loop_video:** If the each music video will be looped
+  - **video_fps:** Frames per second of each video clip
+  - **decode_chunk_size:** Video diffusion's decode chunk size parameter
+  - **motion_bucket_id:** Video diffusion's motion bucket id parameter
+  - **noise_aug_strength:** Video diffusion's noise aug strength parameter
+- **audio_clip**
+  - **n_music_loops:** Number of times to loop each music track
 
 ## Commands
 Build the Docker image
@@ -47,8 +114,44 @@ Apply lint and formatting to the code (only needed for development)
 make lint
 ```
 
+Run the whole pipeline to create the music video
+```bash
+make ai_beats
+```
+
+Run the music generation step
+```bash
+make music
+```
+
+Run the music continuation step
+```bash
+make music_continuation
+```
+
+Run the image generation step
+```bash
+make image
+```
+
+Run the video generation step
+```bash
+make video
+```
+
+Run the audio clip creation step
+```bash
+make audio_clip
+```
+
 # Development
-For development make sure to install `requirements-dev.txt` and run `make lint` to maintain the the coding style.
+For development make sure to install `requirements-dev.txt` and run `make lint` to maintain the coding style.
 
 # Disclaimers
-By default I am using [XTTS](https://huggingface.co/coqui/XTTS-v2) from [Coqui AI](https://github.com/coqui-ai/TTS) the model is under the [Coqui Public Model License](https://coqui.ai/cpml) make sure to take a look there if you plan to use the outputs here.
+The models used by default here have specific licenses that might not be suited for all use cases, if you want to use the same models make sure to check their licenses. For music generation [MusicGen](https://huggingface.co/facebook/musicgen-small) and its [CC-BY-NC 4.0](https://github.com/facebookresearch/audiocraft/blob/main/LICENSE_weights) license, for image generation [SDXL-Turbo](https://huggingface.co/stabilityai/sdxl-turbo) and its [LICENSE-SDXL1.0](https://github.com/Stability-AI/generative-models/blob/main/model_licenses/LICENSE-SDXL1.0) license, and [stable video diffusion](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid) and its [STABLE VIDEO DIFFUSION NC COMMUNITY LICENSE](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid/blob/main/LICENSE) license for video generation.
+
+# References
+- [MusicGen](https://huggingface.co/facebook/musicgen-small)
+- [SDXL-turbo](https://huggingface.co/stabilityai/sdxl-turbo)
+- [Stable Video Diffusion](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid)
+- [Stable Video Diffusion - usage tips](https://huggingface.co/docs/diffusers/main/en/using-diffusers/svd)
