@@ -69,8 +69,10 @@ def extend_music(
             (music_duration - current_music_duration + prompt_music_duration),
         )
         logger.info(
-            f"\tMusic has {current_music_duration}s, ",
-            f"generating an extra {continuation_duration - prompt_music_duration}s",
+            (
+                f"\tMusic has {current_music_duration}s, ",
+                f"generating an extra {continuation_duration - prompt_music_duration}s",
+            )
         )
         model.set_generation_params(duration=continuation_duration)
 

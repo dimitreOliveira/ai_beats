@@ -14,6 +14,7 @@ def generate_video(
     motion_bucket_id,
     noise_aug_strength,
     video_fps,
+    loop_video,
 ):
     for prompt_dir in sorted([p for p in IMAGE_DIR.glob("*/") if p.is_dir()]):
         for cover in sorted([p for p in prompt_dir.glob("*.jpg") if p.is_file()]):
@@ -35,10 +36,11 @@ def generate_video(
 
             video_path = VIDEO_DIR / prompt_dir.stem / f"{cover.stem}.mp4"
             video_path.parent.mkdir(parents=True, exist_ok=True)
-            export_to_video(all_frames, str(video_path), fps=video_fps)
-            # Loop video
-            # frames_continuous = all_frames + all_frames[-2::-1]
-            # export_to_video(frames_continuous, str(video_path), fps=video_fps)
+            if loop_video:
+                frames_continuous = all_frames + all_frames[-2::-1]
+                export_to_video(frames_continuous, str(video_path), fps=video_fps)
+            else:
+                export_to_video(all_frames, str(video_path), fps=video_fps)
 
 
 logging.basicConfig(level=logging.INFO)
@@ -66,4 +68,5 @@ with timer("Video creation"):
         configs["video"]["motion_bucket_id"],
         configs["video"]["noise_aug_strength"],
         configs["video"]["video_fps"],
+        configs["video"]["loop_video"],
     )

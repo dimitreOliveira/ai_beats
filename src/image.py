@@ -74,7 +74,7 @@ def generate_images(
 
             img_path = prompt_dir.parent / f"img_{n_image}.jpg"
             img_path.parent.mkdir(parents=True, exist_ok=True)
-            img.save(img_path)
+            img.save(img_path, quality=100, subsampling=0)
 
 
 logging.basicConfig(level=logging.INFO)
