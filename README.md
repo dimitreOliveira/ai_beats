@@ -6,8 +6,8 @@
 
 With this project, you can use AI to generate music tracks and video clips. Provide some information on how you would like the music and videos, the code will do the rest.
 
-### How does it works?
-First, we use a generative model to create music samples, the default model used here is only able to generate at max 30 seconds of music, for this reason, we take another step to extend the music. After finishing with the audio part we can generate the video, first, we start with a Stable Diffusion model to generate images and then we use another generative model to give it a bit of motion and animation. To compose the final video clip, we take each generated music and join together as many animated images as necessary to match the length of the music.
+### Music generation workflow
+First, we use a generative model to create music samples, the default model used here is only able to generate a max of 30 seconds of music, for this reason, we take another step to extend the music. After finishing with the audio part we can generate the video, first, we start with a Stable Diffusion model to generate images and then we use another generative model to give it a bit of motion and animation. To compose the final video clip, we take each generated music and join together with as many animated images as necessary to match the length of the music.
 
 All of those steps will generate intermediate files that you can inspect and manually remove what you don't like to improve the results.
 
@@ -146,6 +146,9 @@ make audio_clip
 
 # Development
 For development make sure to install `requirements-dev.txt` and run `make lint` to maintain the coding style.
+
+# Requirements
+I developed and tested most of this project on my MacBook Pro M2, the only step that I was not able to run was the video creation step, for that I used Google Colab (with V100 or A100 GPU). Some of the models were not runnable on `MPS` but they run on a reasonable time anyway.
 
 # Disclaimers
 The models used by default here have specific licenses that might not be suited for all use cases, if you want to use the same models make sure to check their licenses. For music generation [MusicGen](https://huggingface.co/facebook/musicgen-small) and its [CC-BY-NC 4.0](https://github.com/facebookresearch/audiocraft/blob/main/LICENSE_weights) license, for image generation [SDXL-Turbo](https://huggingface.co/stabilityai/sdxl-turbo) and its [LICENSE-SDXL1.0](https://github.com/Stability-AI/generative-models/blob/main/model_licenses/LICENSE-SDXL1.0) license, and [stable video diffusion](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid) and its [STABLE VIDEO DIFFUSION NC COMMUNITY LICENSE](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid/blob/main/LICENSE) license for video generation.

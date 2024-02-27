@@ -116,10 +116,8 @@ def continue_music(
         logger.info(f'Extending music "{music_path}" to duration of {music_duration}s')
         final_music_path = MUSIC_FINAL_DIR / music_path.name
         final_music_path.parent.mkdir(parents=True, exist_ok=True)
-        print(final_music_path)
 
         sampling_rate, music = load_audio(str(music_path))
-        print(sampling_rate, music.shape)
 
         music = extend_music(
             music,
