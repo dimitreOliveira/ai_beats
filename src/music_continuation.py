@@ -70,7 +70,7 @@ def extend_music(
         )
         logger.info(
             (
-                f"\tMusic has {current_music_duration}s, ",
+                f"Music has {current_music_duration}s, ",
                 f"generating an extra {continuation_duration - prompt_music_duration}s",
             )
         )

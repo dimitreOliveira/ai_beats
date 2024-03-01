@@ -15,7 +15,10 @@ def generate_audio_clip(track_paths, video_prompt_paths, n_loops):
         audio_clip_path = AUDIO_CLIP_DIR / f"audio_clip_{track_path.stem}.mp4"
         audio_clip_path.parent.mkdir(parents=True, exist_ok=True)
 
-        audio = AudioFileClip(str(track_path)).audio_loop(n_loops)
+        audio = AudioFileClip(str(track_path))
+        audio = audio.audio_fadeout(0.5)
+        audio = audio.audio_loop(n_loops)
+
         audio_clip_duration = 0
         videos = []
 
@@ -26,13 +29,13 @@ def generate_audio_clip(track_paths, video_prompt_paths, n_loops):
 
             if (audio_clip_duration + video.duration) > audio.duration:
                 logger.info(
-                    f"\tTrimming video to {(audio.duration - audio_clip_duration)}s"
+                    f"Trimming video to {(audio.duration - audio_clip_duration)}s"
                 )
                 video = video.subclip(0, (audio.duration - audio_clip_duration))
 
             logger.info(
                 (
-                    f"\tClip currently has {audio_clip_duration}s, ",
+                    f"Clip currently has {audio_clip_duration}s, ",
                     f"adding an extra {video.duration}s from video {video_path.stem}",
                 )
             )
@@ -43,7 +46,9 @@ def generate_audio_clip(track_paths, video_prompt_paths, n_loops):
                 break
 
         audio_clip = concatenate_videoclips(videos)
-        audio_clip.set_audio(audio).write_videofile(
+        audio_clip = audio_clip.set_audio(audio)
+
+        audio_clip.write_videofile(
             str(audio_clip_path),
             verbose=False,
             logger=None,
