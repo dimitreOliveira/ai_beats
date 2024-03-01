@@ -13,10 +13,10 @@ All of those steps will generate intermediate files that you can inspect and man
 
 # Examples
 ### AI Beats Vol. 1
-[![Watch the video]({link_for_the_thumb})]({link_for_the_video})
+[![Watch the video](https://i.ytimg.com/vi/l7kxwPnt5m0/hqdefault.jpg)](https://www.youtube.com/watch?v=l7kxwPnt5m0)
 
 ### AI Beats Vol. 2
-[![Watch the video]({link_for_the_thumb})]({link_for_the_video})
+[![Watch the video](https://i.ytimg.com/vi/O9DgVkp9qto/hqdefault.jpg)](https://www.youtube.com/watch?v=O9DgVkp9qto)
 
 # Usage
 The recommended approach to use this repository is with [Docker](https://docs.docker.com/), but you can also use a custom venv, just make sure to install all dependencies.
