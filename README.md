@@ -4,6 +4,10 @@
 
 ---
 
+### I have written a blog post describing this project in more detail, make sure to check "[How to generate music clips with AI](https://medium.com/google-developer-experts/how-to-generate-music-clips-with-ai-38571f6d7812)" to learn more!
+
+---
+
 With this project, you can use AI to generate music tracks and video clips. Provide some information on how you would like the music and videos, the code will do the rest.
 
 ### Music generation workflow
